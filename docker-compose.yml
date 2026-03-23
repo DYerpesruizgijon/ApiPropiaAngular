@@ -1,0 +1,31 @@
+services:
+  db:
+    image: mariadb:10.11
+    restart: always
+    environment:
+      MYSQL_DATABASE: dyerpes_general
+      MYSQL_USER: dyerpes
+      MYSQL_PASSWORD: xNBhmCML
+      MYSQL_ROOT_PASSWORD: rootpassword
+    ports:
+      - "3307:3306"
+    healthcheck:
+      # Ahora el healthcheck está indentado correctamente dentro de 'db'
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root -p$$MYSQL_ROOT_PASSWORD"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  api:
+    build: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mariadb://db:3306/dyerpes_general
+      SPRING_DATASOURCE_USERNAME: dyerpes
+      SPRING_DATASOURCE_PASSWORD: xNBhmCML
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.mariadb.jdbc.Driver
