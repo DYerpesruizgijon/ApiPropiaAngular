@@ -42,6 +42,14 @@ public class PokemonController {
         }
     }
 
+// Nuevo endpoint: Obtener un Pokemon por su ID
+    @GetMapping("/{id}")
+    public ResponseEntity<Pokemon> getPokemonById(@PathVariable Integer id) {
+        return repository.findById(id)
+                .map(pokemon -> ResponseEntity.ok(pokemon)) // Si existe, devuelve 200 OK con el objeto
+                .orElse(ResponseEntity.notFound().build());    // Si no, devuelve 404 Not Found
+    }
+
     // 1. Guardar un nuevo Pokemon (cuando lo traes de la PokeAPI)
     @PostMapping
     public Pokemon savePokemon(@RequestBody Pokemon pokemon) {
@@ -97,6 +105,7 @@ public class PokemonController {
                 })
                 .orElse(ResponseEntity.notFound().build());
     }
+
     // Nuevo endpoint para la gráfica de regiones
     @GetMapping("/rankingByRegion")
     public ResponseEntity<List<PokemonRepository.RegionVotosDTO>> getRankingByRegion() {
